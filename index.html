@@ -124,7 +124,16 @@ button:hover{
 </head>
 
 <body>
-<div class="page-wrap">
+  <div id="loginScreen" class="page-wrap">
+  <div class="card" style="text-align:center">
+    <h1>Attendance System</h1>
+    <p style="color:#64748b;margin-bottom:20px">
+      Sign in with Microsoft 365
+    </p>
+    <button onclick="login()">Sign in with Microsoft 365</button>
+  </div>
+</div>
+<div class="page-wrap" id="formScreen" style="display:none">
   <div class="card">
     <h1>Attendance Form</h1>
 
@@ -190,6 +199,25 @@ const msalInstance = new msal.PublicClientApplication({
 let employees = [];
 
 /* ===== AUTH ===== */
+  async function login() {
+  try {
+    await msalInstance.loginPopup({
+      scopes: SCOPES,
+      prompt: "select_account"
+    });
+
+    // hide login, show form
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("formScreen").style.display = "flex";
+
+    // load employees AFTER login
+    await loadEmployees();
+  } catch (e) {
+    console.error(e);
+    alert("Microsoft sign-in failed. Please try again.");
+  }
+}
+
 async function getToken() {
   const account = msalInstance.getAllAccounts()[0];
   if (!account) {
@@ -338,3 +366,4 @@ setTimeout(() => {
 </script>
 </body>
 </html>
+
