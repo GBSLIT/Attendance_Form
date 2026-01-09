@@ -304,6 +304,20 @@ if(!emailSelect.value || !workShift.value || !locValue){
   ]);
 
   status.innerText = "Attendance submitted successfully ✔";
+status.style.color = "#15803d"; // green
+
+// Clear form
+emailSelect.value = "";
+empSelect.value = "";
+entryType.value = "Check-In";
+workShift.value = "";
+document.getElementById("location").value = "";
+
+// Auto-hide success message after 3 seconds
+setTimeout(() => {
+  status.innerText = "";
+}, 3000);
+
 }
 
 /* INIT */
@@ -320,6 +334,7 @@ if(!emailSelect.value || !workShift.value || !locValue){
 </script>
 </body>
 </html>
+
 
 
 
