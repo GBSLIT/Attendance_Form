@@ -303,8 +303,11 @@ if(!emailSelect.value || !workShift.value || !locValue){
     now.toLocaleTimeString()
   ]);
 
-  status.innerText = "Attendance submitted successfully ✔";
-status.style.color = "#15803d"; // green
+  const statusEl = document.getElementById("status");
+statusEl.innerText = "Attendance submitted successfully ✔";
+statusEl.style.color = "#15803d";
+
+document.getElementById("status").style.color = "#15803d"; // green
 
 // Clear form
 emailSelect.value = "";
@@ -315,8 +318,9 @@ document.getElementById("location").value = "";
 
 // Auto-hide success message after 3 seconds
 setTimeout(() => {
-  status.innerText = "";
+  statusEl.innerText = "";
 }, 3000);
+
 
 }
 
@@ -334,6 +338,7 @@ setTimeout(() => {
 </script>
 </body>
 </html>
+
 
 
 
