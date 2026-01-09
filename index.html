@@ -201,6 +201,12 @@ async function getToken(){
 }
 
 /* ===== LOAD EMPLOYEES (NO TABLE) ===== */
+  async function ensureLogin() {
+  const accounts = msalInstance.getAllAccounts();
+  if (accounts.length === 0) {
+    await msalInstance.loginPopup({ scopes: SCOPES });
+  }
+}
 async function loadEmployees(){
   const token = await getToken();
   const url = `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/worksheets('Employees')/usedRange(valuesOnly=true)`;
@@ -283,8 +289,18 @@ async function submitAttendance(){
 }
 
 /* INIT */
-loadEmployees();
+(async () => {
+  try {
+    await ensureLogin();   // 👈 force sign-in
+    await loadEmployees(); // 👈 now Excel can be read
+  } catch (e) {
+    console.error("Initialization failed", e);
+    alert("Microsoft sign-in failed. Please refresh and try again.");
+  }
+})();
+
 </script>
 </body>
 </html>
+
 
