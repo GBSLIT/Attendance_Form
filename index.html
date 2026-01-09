@@ -281,9 +281,12 @@ async function appendAttendance(values){
 
 /* ===== SUBMIT ===== */
 async function submitAttendance(){
-  if(!emailSelect.value || !workShift.value || !location.value){
-    alert("Please fill all required fields"); return;
-  }
+  const locValue = document.getElementById("location").value;
+
+if(!emailSelect.value || !workShift.value || !locValue){
+  alert("Please fill all required fields");
+  return;
+}
   const geo = await getGeo();
   const now = new Date();
 
@@ -293,7 +296,7 @@ async function submitAttendance(){
     empSelect.value,
     entryType.value,
     workShift.value,
-    location.value,
+    locValue,
     geo.lat,
     geo.lon,
     geo.acc,
@@ -317,6 +320,7 @@ async function submitAttendance(){
 </script>
 </body>
 </html>
+
 
 
 
