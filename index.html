@@ -161,8 +161,8 @@ button:hover{
     <label><span class="required">*</span> CheckIn/CheckOut Location</label>
     <select id="location">
        <option value="IN Office">IN Office</option>
-      <option value="OUT Side">Remote</option>
-      <option value="WFH">Client Site</option>
+      <option value="OUT Side">OUT Side</option>
+      <option value="WFH">WFH</option>
     </select>
 
    <button id="submitBtn" onclick="submitAttendance()">Submit</button>
@@ -275,8 +275,8 @@ async function loadEmployees(){
     status: row[headers.indexOf("Status")]
   })).filter(e=>e.email && e.status==="Active");
 
-  emailSelect.innerHTML = `<option value="">-- Select email --</option>`;
-  empSelect.innerHTML   = `<option value="">-- Select Emp Code --</option>`;
+  emailSelect.innerHTML = `<option value=""> Select email </option>`;
+  empSelect.innerHTML   = `<option value=""> Select Emp Code </option>`;
 
   employees.forEach(e=>{
     emailSelect.innerHTML += `<option value="${e.email}">${e.email}</option>`;
@@ -381,6 +381,7 @@ async function submitAttendance(){
 </script>
 </body>
 </html>
+
 
 
 
