@@ -351,19 +351,8 @@ setTimeout(() => {
 
 
 }
-
-/* INIT */
-(async () => {
-  try {
-    await ensureLogin();   // 👈 force sign-in
-    await loadEmployees(); // 👈 now Excel can be read
-  } catch (e) {
-    console.error("Initialization failed", e);
-    alert("Microsoft sign-in failed. Please refresh and try again.");
-  }
-})();
-
 </script>
 </body>
 </html>
+
 
