@@ -190,23 +190,38 @@ const msalInstance = new msal.PublicClientApplication({
 let employees = [];
 
 /* ===== AUTH ===== */
-async function getToken(){
-  let acct = msalInstance.getAllAccounts()[0];
-  if(!acct) await msalInstance.loginPopup({scopes:SCOPES});
-  const r = await msalInstance.acquireTokenSilent({
-    scopes:SCOPES,
-    account:msalInstance.getAllAccounts()[0]
-  });
-  return r.accessToken;
+async function getToken() {
+  const account = msalInstance.getAllAccounts()[0];
+  if (!account) {
+    throw new Error("User not logged in");
+  }
+
+  try {
+    const res = await msalInstance.acquireTokenSilent({
+      scopes: SCOPES,
+      account
+    });
+    return res.accessToken;
+  } catch (err) {
+    const res = await msalInstance.acquireTokenPopup({
+      scopes: SCOPES
+    });
+    return res.accessToken;
+  }
 }
+
 
 /* ===== LOAD EMPLOYEES (NO TABLE) ===== */
   async function ensureLogin() {
   const accounts = msalInstance.getAllAccounts();
   if (accounts.length === 0) {
-    await msalInstance.loginPopup({ scopes: SCOPES });
+    await msalInstance.loginPopup({
+      scopes: SCOPES,
+      prompt: "select_account"
+    });
   }
 }
+
 async function loadEmployees(){
   const token = await getToken();
   const url = `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/worksheets('Employees')/usedRange(valuesOnly=true)`;
@@ -302,5 +317,6 @@ async function submitAttendance(){
 </script>
 </body>
 </html>
+
 
 
