@@ -139,12 +139,12 @@ button:hover{
 
     <label><span class="required">*</span> Email Address</label>
     <select id="emailSelect">
-      <option value="">-- Select email --</option>
+      <option value=""> Select email </option>
     </select>
 
     <label>Emp Code</label>
     <select id="empSelect">
-      <option value="">-- Select Emp Code --</option>
+      <option value=""> Select Emp Code </option>
     </select>
 
     <label><span class="required">*</span> Entry Type</label>
@@ -155,18 +155,14 @@ button:hover{
 
     <label><span class="required">*</span> Work Shift</label>
     <select id="workShift">
-      <option value="">-- Select Shift --</option>
       <option value="General">General</option>
-      <option value="Morning">Morning</option>
-      <option value="Night">Night</option>
-    </select>
+      </select>
 
     <label><span class="required">*</span> CheckIn/CheckOut Location</label>
     <select id="location">
-      <option value="">-- Select Location --</option>
-      <option value="IN Office">IN Office</option>
-      <option value="Remote">Remote</option>
-      <option value="Client Site">Client Site</option>
+       <option value="IN Office">IN Office</option>
+      <option value="OUT Side">Remote</option>
+      <option value="WFH">Client Site</option>
     </select>
 
    <button id="submitBtn" onclick="submitAttendance()">Submit</button>
@@ -385,6 +381,7 @@ async function submitAttendance(){
 </script>
 </body>
 </html>
+
 
 
 
