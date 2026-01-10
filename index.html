@@ -302,21 +302,43 @@ function getGeo(){
 async function appendAttendance(values){
   const token = await getToken();
   const base = `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook`;
-  const used = await fetch(`${base}/worksheets('Attendance')/usedRange(valuesOnly=true)`,{
-    headers:{Authorization:`Bearer ${token}`}
-  }).then(r=>r.json());
 
-  const nextRow = (used.values?.length || 1) + 1;
+  // 1️⃣ Read ONLY column A (Date column)
+  const colAResp = await fetch(
+    `${base}/worksheets('Attendance')/range(address='A:A')`,
+    { headers:{ Authorization:`Bearer ${token}` } }
+  );
+  const colA = await colAResp.json();
+  const rows = colA.values || [];
+
+  // 2️⃣ Find first empty row (skip header)
+  let nextRow = null;
+  for(let i = 1; i < rows.length; i++){
+    if(!rows[i] || !rows[i][0]){
+      nextRow = i + 1;
+      break;
+    }
+  }
+
+  // 3️⃣ If no empty row found, append at end
+  if(!nextRow){
+    nextRow = rows.length + 1;
+  }
+
+  // 4️⃣ Write attendance to that row
   const range = `A${nextRow}:J${nextRow}`;
 
-  await fetch(`${base}/worksheets('Attendance')/range(address='${range}')`,{
-    method:"PATCH",
-    headers:{
-      Authorization:`Bearer ${token}`,
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify({values:[values]})
-  });
+  await fetch(
+    `${base}/worksheets('Attendance')/range(address='${range}')`,
+    {
+      method:"PATCH",
+      headers:{
+        Authorization:`Bearer ${token}`,
+        "Content-Type":"application/json"
+      },
+      body: JSON.stringify({ values:[values] })
+    }
+  );
 }
 
 /* ===== SUBMIT ===== */
@@ -381,6 +403,7 @@ async function submitAttendance(){
 </script>
 </body>
 </html>
+
 
 
 
