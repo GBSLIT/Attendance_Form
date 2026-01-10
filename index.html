@@ -363,7 +363,15 @@ async function submitAttendance(){
     document.getElementById("location").value = "";
 
     // Keep button disabled after success
-    submitBtn.innerText = "Submitted ✓";
+   // Update button state
+submitBtn.innerText = "Submitted ✓";
+
+// Re-enable button after 2 seconds
+setTimeout(() => {
+  submitBtn.disabled = false;
+  submitBtn.innerText = "Submit";
+}, 9000);
+
 
   } catch (err) {
     console.error(err);
@@ -381,4 +389,5 @@ async function submitAttendance(){
 </script>
 </body>
 </html>
+
 
