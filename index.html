@@ -178,6 +178,22 @@ button:hover{
 
 <script>
 /* ===== CONFIG (same pattern as dashboard) ===== */
+
+  function showLoginScreen(message) {
+  if (message) {
+    alert(message);
+  }
+
+  // Clear MSAL cache
+  msalInstance.getAllAccounts().forEach(acc => {
+    msalInstance.logoutPopup({ account: acc }).catch(() => {});
+  });
+
+  // Switch UI
+  document.getElementById("formScreen").style.display = "none";
+  document.getElementById("loginScreen").style.display = "flex";
+}
+
 const CLIENT_ID = "913e02e0-ebb9-4e17-b14c-14b9786442ce";
 const TENANT_ID = "93846c24-8666-4033-8b6e-901877a2cf98";
 const REDIRECT_URI = window.location.href;
@@ -232,8 +248,10 @@ async function checkExistingLogin() {
 
 async function getToken() {
   const account = msalInstance.getAllAccounts()[0];
+
   if (!account) {
-    throw new Error("User not logged in");
+    showLoginScreen("Session expired. Please sign in again.");
+    throw new Error("No account");
   }
 
   try {
@@ -243,12 +261,12 @@ async function getToken() {
     });
     return res.accessToken;
   } catch (err) {
-    const res = await msalInstance.acquireTokenPopup({
-      scopes: SCOPES
-    });
-    return res.accessToken;
+    // Token expired / interaction required
+    showLoginScreen("Session expired. Please sign in again.");
+    throw err;
   }
 }
+
 
 
 /* ===== LOAD EMPLOYEES (NO TABLE) ===== */
@@ -389,5 +407,6 @@ setTimeout(() => {
 </script>
 </body>
 </html>
+
 
 
