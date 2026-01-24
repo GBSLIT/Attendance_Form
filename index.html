@@ -135,7 +135,17 @@ button:hover{
 </div>
 <div class="page-wrap" id="formScreen" style="display:none">
   <div class="card">
-    <h1>Attendance Form</h1>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+  <h1 style="margin:0">Attendance Form</h1>
+  <button
+    id="signInBtn"
+    onclick="login()"
+    style="display:none;background:#e5edff;color:#0d6efd;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600"
+  >
+    Sign In
+  </button>
+</div>
+
 
     <label><span class="required">*</span> Email Address</label>
     <select id="emailSelect">
@@ -233,24 +243,27 @@ async function checkExistingLogin() {
   const accounts = msalInstance.getAllAccounts();
 
   if (accounts.length > 0) {
-    // User already logged in
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("formScreen").style.display = "flex";
+    document.getElementById("signInBtn").style.display = "none";
 
     try {
       await loadEmployees();
     } catch (e) {
-      console.error("Failed loading employees", e);
-      alert("Session expired. Please sign in again.");
+      showLoginExpired();
     }
+  } else {
+    // Not logged in → show Sign In button
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("formScreen").style.display = "flex";
+    document.getElementById("signInBtn").style.display = "inline-block";
   }
 }
-
 async function getToken() {
   const account = msalInstance.getAllAccounts()[0];
 
   if (!account) {
-    showLoginScreen("Session expired. Please sign in again.");
+    showLoginExpired();
     throw new Error("No account");
   }
 
@@ -261,10 +274,16 @@ async function getToken() {
     });
     return res.accessToken;
   } catch (err) {
-    // Token expired / interaction required
-    showLoginScreen("Session expired. Please sign in again.");
+    showLoginExpired();
     throw err;
   }
+}
+
+
+function showLoginExpired() {
+  alert("Session expired. Please sign in again.");
+
+  document.getElementById("signInBtn").style.display = "inline-block";
 }
 
 
@@ -407,6 +426,7 @@ setTimeout(() => {
 </script>
 </body>
 </html>
+
 
 
 
