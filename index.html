@@ -135,17 +135,7 @@ button:hover{
 </div>
 <div class="page-wrap" id="formScreen" style="display:none">
   <div class="card">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-  <h1 style="margin:0">Attendance Form</h1>
-  <button
-    id="signInBtn"
-    onclick="login()"
-    style="display:none;background:#e5edff;color:#0d6efd;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600"
-  >
-    Sign In
-  </button>
-</div>
-
+    <h1>Attendance Form</h1>
 
     <label><span class="required">*</span> Email Address</label>
     <select id="emailSelect">
@@ -188,22 +178,6 @@ button:hover{
 
 <script>
 /* ===== CONFIG (same pattern as dashboard) ===== */
-
-  function showLoginScreen(message) {
-  if (message) {
-    alert(message);
-  }
-
-  // Clear MSAL cache
-  msalInstance.getAllAccounts().forEach(acc => {
-    msalInstance.logoutPopup({ account: acc }).catch(() => {});
-  });
-
-  // Switch UI
-  document.getElementById("formScreen").style.display = "none";
-  document.getElementById("loginScreen").style.display = "flex";
-}
-
 const CLIENT_ID = "913e02e0-ebb9-4e17-b14c-14b9786442ce";
 const TENANT_ID = "93846c24-8666-4033-8b6e-901877a2cf98";
 const REDIRECT_URI = window.location.href;
@@ -242,30 +216,31 @@ let employees = [];
 async function checkExistingLogin() {
   const accounts = msalInstance.getAllAccounts();
 
-  if (accounts.length > 0) {
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("formScreen").style.display = "flex";
-    document.getElementById("signInBtn").style.display = "none";
+  if (accounts.length === 0) {
+    // Not logged in
+    document.getElementById("loginScreen").style.display = "flex";
+    document.getElementById("formScreen").style.display = "none";
+    return;
+  }
 
-    try {
-      await loadEmployees();
-    } catch (e) {
-      showLoginExpired();
-    }
-  } else {
-    // Not logged in → show Sign In button
+  try {
+    // Validate session by getting token
+    await getToken();
+
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("formScreen").style.display = "flex";
-    document.getElementById("signInBtn").style.display = "inline-block";
+
+    await loadEmployees();
+  } catch (err) {
+    console.warn("Token expired, forcing re-login", err);
+    await login(); // auto re-login, no alert
   }
 }
+
+
 async function getToken() {
   const account = msalInstance.getAllAccounts()[0];
-
-  if (!account) {
-    showLoginExpired();
-    throw new Error("No account");
-  }
+  if (!account) throw new Error("No account");
 
   try {
     const res = await msalInstance.acquireTokenSilent({
@@ -274,16 +249,12 @@ async function getToken() {
     });
     return res.accessToken;
   } catch (err) {
-    showLoginExpired();
-    throw err;
+    const res = await msalInstance.acquireTokenPopup({
+      scopes: SCOPES,
+      prompt: "select_account"
+    });
+    return res.accessToken;
   }
-}
-
-
-function showLoginExpired() {
-  alert("Session expired. Please sign in again.");
-
-  document.getElementById("signInBtn").style.display = "inline-block";
 }
 
 
@@ -426,7 +397,4 @@ setTimeout(() => {
 </script>
 </body>
 </html>
-
-
-
 
